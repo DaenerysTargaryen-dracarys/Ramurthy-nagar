@@ -12,78 +12,37 @@
       animation: aurora 15s ease infinite;
       font-family: "Segoe UI", Arial, sans-serif;
     }
-    @keyframes aurora {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-    .glass {
-      background: rgba(255, 255, 255, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      backdrop-filter: blur(12px);
-      border-radius: 20px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      transition: 0.3s ease;
-    }
-    .glass:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
-    }
-    .btn {
-      padding: 0.5rem 1.25rem;
-      border-radius: 0.5rem;
-      font-weight: 600;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      transition: transform 0.2s, opacity 0.3s;
-    }
-    .btn-main {
-      background: linear-gradient(to right, #ff758c, #ff7eb3);
-      color: white;
-    }
-    .btn-main:hover { transform: scale(1.05); }
-    .btn-alt {
-      background: rgba(255,255,255,0.2);
-      color: white;
-    }
-    .btn-alt:hover { transform: scale(1.05); }
-    input:focus {
-      border-color: #ff7eb3;
-      box-shadow: 0 0 8px rgba(255,126,179,0.7);
-      outline: none;
-    }
-    table { width: 100%; border-collapse: collapse; }
-    th, td {
-      padding: 10px;
-      text-align: center;
-      border: 1px solid rgba(255,255,255,0.3);
-    }
-    th { background: rgba(255,255,255,0.2); color: #fff; }
-    tr:hover { background: rgba(255,255,255,0.25); cursor: pointer; transition: 0.3s; }
-    tr.copied {
-      background: rgba(255, 255, 255, 0.3);
-      color: #222;
-      font-weight: bold;
-    }
-    .fade { opacity: 0; transition: opacity 0.5s; }
-    .fade.show { opacity: 1; }
-    #loader { display: none; text-align: center; font-weight: bold; margin-top: 10px; }
+    @keyframes aurora { 0% {background-position:0% 50%;} 50% {background-position:100% 50%;} 100% {background-position:0% 50%;} }
+    .glass { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(12px); border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); transition: 0.3s ease; }
+    .glass:hover { transform: translateY(-5px); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+    .btn { padding:0.5rem 1.25rem; border-radius:0.5rem; font-weight:600; box-shadow:0 4px 12px rgba(0,0,0,0.2); transition: transform 0.2s, opacity 0.3s; }
+    .btn-main { background: linear-gradient(to right, #ff758c, #ff7eb3); color: white; } 
+    .btn-main:hover { transform: scale(1.05); } 
+    .btn-alt { background: rgba(255,255,255,0.2); color: white; } 
+    .btn-alt:hover { transform: scale(1.05); } 
+    input:focus { border-color:#ff7eb3; box-shadow:0 0 8px rgba(255,126,179,0.7); outline:none; }
+    table { width:100%; border-collapse:collapse; }
+    th, td { padding:10px; text-align:center; border:1px solid rgba(255,255,255,0.3); }
+    th { background: rgba(255,255,255,0.2); color:#fff; }
+    tr:hover { background: rgba(255,255,255,0.25); cursor:pointer; transition:0.3s; }
+    tr.copied { background: rgba(255,255,255,0.3); color:#222; font-weight:bold; }
+    .fade { opacity:0; transition:opacity 0.5s; }
+    .fade.show { opacity:1; }
+    #loader { display:none; text-align:center; font-weight:bold; margin-top:10px; }
   </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4 text-white">
 
-  <!-- Login -->
+  <!-- Login Screen -->
   <div id="loginScreen" class="glass p-8 w-full max-w-md text-center fade show">
     <h1 class="text-3xl font-bold mb-4">Authentication Required</h1>
-    <h2 class="text-xl font-semibold mb-6">Login</h2>
-    <input type="text" id="userId" placeholder="User ID"
-      class="w-full mb-4 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/70">
-    <input type="password" id="password" placeholder="Password"
-      class="w-full mb-6 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/70">
+    <input type="text" id="userId" placeholder="User ID" class="w-full mb-4 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/70">
+    <input type="password" id="password" placeholder="Password" class="w-full mb-6 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/70">
     <button onclick="login()" class="btn btn-main w-full mb-2">Login</button>
     <p id="loginMessage" class="mt-4 text-red-200 font-semibold"></p>
   </div>
 
-  <!-- User App -->
+  <!-- User App Screen -->
   <div id="appScreen" class="glass p-6 w-full max-w-4xl hidden fade">
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-2xl font-bold">User Dashboard</h2>
@@ -141,7 +100,7 @@
       apiKey: "AIzaSyCnFHygIpjdPzF4EaMZoKBzBTpiU0keQw0",
       authDomain: "marvel-be93b.firebaseapp.com",
       projectId: "marvel-be93b",
-      storageBucket: "marvel-be93b.firebasestorage.app",
+      storageBucket: "marvel-be93b.appspot.com",
       messagingSenderId: "626647068839",
       appId: "1:626647068839:web:90e88fae52fba975312b82",
       measurementId: "G-V32XBZJZE4",
@@ -150,11 +109,10 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-
-    let currentData = [], copiedLinks = new Set(JSON.parse(localStorage.getItem("copiedLinks") || "[]"));
     const storeID = "91KDIPL614-01";
+    let currentData = [], copiedLinks = new Set(JSON.parse(localStorage.getItem("copiedLinks") || "[]"));
 
-    function showScreen(id) {
+    function showScreen(id){
       ["loginScreen","appScreen","adminScreen"].forEach(s=>{
         const el=document.getElementById(s);
         el.classList.remove("show"); el.style.display="none";
@@ -166,20 +124,38 @@
 
     // --- Login ---
     window.login = function() {
-      const userId=document.getElementById("userId").value.trim();
-      const password=document.getElementById("password").value.trim();
-      if(userId==="Matrix" && password==="NaveenRusthin@25"){ // Admin
+      const userId = document.getElementById("userId").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      // Admin login
+      if (userId === "Matrix" && password === "NaveenRusthin@25") {
         showScreen("adminScreen");
         return;
       }
-      if(userId && password){ showScreen("appScreen"); }
-      else document.getElementById("loginMessage").innerText="Invalid credentials!";
+
+      // Check Firebase user status before allowing login
+      const userStatusRef = ref(db, "users/K322/status");
+      onValue(userStatusRef, snapshot => {
+        const status = snapshot.val() || "inactive";
+
+        if (status === "inactive") {
+          document.getElementById("loginMessage").innerText = "⚠️ User is inactive! Contact Admin.";
+          return; // Block login entirely
+        }
+
+        // Only allow login if user is active
+        if (userId && password) {
+          showScreen("appScreen");
+        } else {
+          document.getElementById("loginMessage").innerText = "Invalid credentials!";
+        }
+      }, { onlyOnce: true });
     };
 
     window.logout = function(){ showScreen("loginScreen"); };
 
-    // --- Admin Status Update ---
-    window.setStatus = function(active) {
+    // --- Admin Status ---
+    window.setStatus = function(active){
       set(ref(db, "users/K322/status"), active ? "active" : "inactive");
       alert(`User status updated to: ${active ? "Active ✅" : "Inactive ❌"}`);
     };
@@ -188,23 +164,23 @@
     const statusRef = ref(db, "users/K322/status");
     onValue(statusRef, (snapshot)=>{
       const status = snapshot.val() || "inactive";
-      const userLabel=document.getElementById("statusLabel");
-      if(userLabel) userLabel.innerText=status==="active"?"✅ Active":"❌ Inactive";
-      const adminLabel=document.getElementById("adminStatus");
-      if(adminLabel) adminLabel.innerText=status==="active"?"✅ Active":"❌ Inactive";
-      const fileInput=document.getElementById("fileInput");
-      const generateBtn=document.getElementById("generateBtn");
-      if(fileInput) fileInput.disabled=status==="inactive";
-      if(generateBtn) generateBtn.disabled=status==="inactive";
-      if(status==="inactive" && document.getElementById("appScreen").style.display!=="none") {
+      document.getElementById("statusLabel").innerText = status==="active"?"✅ Active":"❌ Inactive";
+      document.getElementById("adminStatus").innerText = status==="active"?"✅ Active":"❌ Inactive";
+
+      const fileInput = document.getElementById("fileInput");
+      const generateBtn = document.getElementById("generateBtn");
+      if(fileInput) fileInput.disabled = status==="inactive";
+      if(generateBtn) generateBtn.disabled = status==="inactive";
+
+      if(status==="inactive" && document.getElementById("appScreen").style.display!=="none"){
         alert("⚠️ Your subscription has ended. Contact Admin.");
+        logout();
       }
     });
 
     // --- Excel Helpers ---
     function convertExcelDate(serial){ if(!serial||isNaN(serial)) return ""; const date=new Date((serial-25569)*86400*1000); return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`; }
     function convertExcelTime(serial){ if(!serial||isNaN(serial)) return ""; const totalMs=Math.round(serial*24*60*60*1000); const h=String(Math.floor(totalMs/(60*60*1000))).padStart(2,"0"); const m=String(Math.floor((totalMs%(60*60*1000))/(60*1000))).padStart(2,"0"); const s=String(Math.floor((totalMs%(60*1000))/1000)).padStart(2,"0"); return `${h}:${m}:${s}`; }
-
     function generateSurveyLink(row){
       const receipt=row["Receipt No."], sales=row["Sales Type"];
       let SM="",OI="",OT="";
@@ -213,8 +189,7 @@
       else if(receipt.startsWith("K322") && sales==="DELIVERY"){SM="3.0";OI=receipt;OT="3";}
       else return null;
       const D=convertExcelDate(row["Date"]);const TM=convertExcelTime(row["Time"]);
-      const PH=`91${row["Sell-to Contact No."]}`;const DTM=`${D}T${TM}Z`;
-      const data={"S":storeID,"OI":OI,"D":D,"TM":TM,"DTM":DTM,"TI":OI,"OT":OT,"SM":SM,"PH":PH};
+      const PH=`91${row["Sell-to Contact No."]}`;const DTM=`${D}T${TM}Z`;const data={"S":storeID,"OI":OI,"D":D,"TM":TM,"DTM":DTM,"TI":OI,"OT":OT,"SM":SM,"PH":PH};
       return `https://customer.kfc-listens.com/jfe/form/SV_8bHC0noyvM3jPWC?Q_EED=${btoa(JSON.stringify(data))}`;
     }
 
