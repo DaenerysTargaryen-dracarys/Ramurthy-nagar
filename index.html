@@ -91,7 +91,7 @@
   <div id="loginScreen" class="glass p-8 w-full max-w-md text-center fade show">
     <h1 class="text-3xl font-bold mb-4">Authentication Required</h1>
     <h2 class="text-xl font-semibold mb-6">Login</h2>
-    <input type="text" id="userId" placeholder="User ID"
+    <input type="text" id="userId" placeholder="User Email"
       class="w-full mb-4 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/70">
     <input type="password" id="password" placeholder="Password"
       class="w-full mb-6 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/70">
@@ -154,8 +154,14 @@
 
   <!-- XLSX Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-  <script>
+    const supabaseUrl = "https://jnbqbykvnzgmebcrcdxk.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuYnFieWt2bnpnbWViY3JjZHhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc4MDEyMzQsImV4cCI6MjA3MzM3NzIzNH0.sebeDm22GhkCYYB85PxnLR63tg4byTtLhaxgS5Nmmyg";
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
     // --- Screen Management ---
     if(!localStorage.getItem("userStatus")) localStorage.setItem("userStatus","active");
     let currentData=[],copiedLinks=new Set(JSON.parse(localStorage.getItem("copiedLinks")||"[]"));
@@ -171,23 +177,32 @@
       setTimeout(()=>el.classList.add('show'),10);
     }
 
-    function login(){
+    async function login(){
       const userId=document.getElementById("userId").value.trim();
       const password=document.getElementById("password").value.trim();
-      if(userId==="Matrix" && password==="NaveenRusthin@25"){
+      if(!userId || !password) { document.getElementById("loginMessage").innerText="Enter credentials!"; return; }
+
+      const { data, error } = await supabase.auth.signInWithPassword({ email: userId, password: password });
+
+      if(error){ document.getElementById("loginMessage").innerText=error.message; return; }
+
+      if(userId==="admin@example.com"){ // optionally admin email
         showScreen('adminScreen'); updateAdminStatus(); return;
       }
-      if(userId && password){
-        const status=localStorage.getItem("userStatus");
-        showScreen('appScreen');
-        document.getElementById("statusLabel").innerText=status==="active"?"✅ Active":"❌ Inactive";
-        document.getElementById("fileInput").disabled = status==="inactive";
-        document.getElementById("generateBtn").disabled = status==="inactive";
-        if(status==="inactive") alert("Your subscription has ended. Contact your Admin.");
-      }else{document.getElementById("loginMessage").innerText="Invalid credentials!";}
+
+      const status = localStorage.getItem("userStatus");
+      showScreen('appScreen');
+      document.getElementById("statusLabel").innerText=status==="active"?"✅ Active":"❌ Inactive";
+      document.getElementById("fileInput").disabled = status==="inactive";
+      document.getElementById("generateBtn").disabled = status==="inactive";
+      if(status==="inactive") alert("Your subscription has ended. Contact your Admin.");
     }
 
-    function logout(){showScreen('loginScreen');}
+    async function logout(){
+      await supabase.auth.signOut();
+      showScreen('loginScreen');
+    }
+
     function setStatus(active){localStorage.setItem("userStatus",active?"active":"inactive");updateAdminStatus();alert(`User status updated to: ${active?"Active":"Inactive"}`);}
     function updateAdminStatus(){document.getElementById("adminStatus").innerText=localStorage.getItem("userStatus")==="active"?"✅ Active":"❌ Inactive";}
 
@@ -195,7 +210,6 @@
     function convertExcelDate(serial){if(!serial||isNaN(serial))return"";const date=new Date((serial-25569)*86400*1000);return`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;}
     function convertExcelTime(serial){if(!serial||isNaN(serial))return"";const totalMs=Math.round(serial*24*60*60*1000);const h=String(Math.floor(totalMs/(60*60*1000))).padStart(2,'0');const m=String(Math.floor((totalMs%(60*60*1000))/(60*1000))).padStart(2,'0');const s=String(Math.floor((totalMs%(60*1000))/1000)).padStart(2,'0');return`${h}:${m}:${s}`;}
 
-    // --- Generate Link for K322 ---
     function generateSurveyLink(row){
       const receipt=row['Receipt No.'], sales=row['Sales Type'];
       let SM='',OI='',OT='';
