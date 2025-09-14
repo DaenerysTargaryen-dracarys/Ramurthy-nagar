@@ -28,7 +28,10 @@
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
       transition: 0.3s ease;
     }
-    .glass:hover { transform: translateY(-5px); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+    .glass:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    }
 
     /* Buttons */
     .btn {
@@ -38,20 +41,41 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
       transition: transform 0.2s, opacity 0.3s;
     }
-    .btn-main { background: linear-gradient(to right, #ff758c, #ff7eb3); color: white; }
+    .btn-main {
+      background: linear-gradient(to right, #ff758c, #ff7eb3);
+      color: white;
+    }
     .btn-main:hover { transform: scale(1.05); }
-    .btn-alt { background: rgba(255,255,255,0.2); color: white; }
+    .btn-alt {
+      background: rgba(255,255,255,0.2);
+      color: white;
+    }
     .btn-alt:hover { transform: scale(1.05); }
 
     /* Input Focus Glow */
-    input:focus { border-color: #ff7eb3; box-shadow: 0 0 8px rgba(255,126,179,0.7); outline: none; }
+    input:focus {
+      border-color: #ff7eb3;
+      box-shadow: 0 0 8px rgba(255,126,179,0.7);
+      outline: none;
+    }
 
     /* Table Styling */
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.3); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
     th { background: rgba(255,255,255,0.2); color: #fff; }
     tr:hover { background: rgba(255,255,255,0.25); cursor: pointer; transition: 0.3s; }
-    tr.copied { background: rgba(255, 255, 255, 0.3); color: #222; font-weight: bold; }
+    tr.copied {
+      background: rgba(255, 255, 255, 0.3);
+      color: #222;
+      font-weight: bold;
+    }
 
     /* Fade In Animation */
     .fade { opacity: 0; transition: opacity 0.5s; }
@@ -83,7 +107,8 @@
     </div>
 
     <div class="glass p-4 mb-6">
-      <p><b>User Name:</b> <span id="userNameDisplay"></span></p>
+      <p><b>User Name:</b> Ramurthy-Nagar </p>
+      <p><b>Store Code:</b> K322</p>
       <p><b>Status:</b> <span id="statusLabel"></span></p>
     </div>
 
@@ -119,93 +144,58 @@
       <h2 class="text-2xl font-bold">🔐 Admin Panel</h2>
       <button onclick="logout()" class="btn btn-alt">Logout</button>
     </div>
-    <p><b>Status of ramurthy-nagar:</b> <span id="adminStatus"></span></p>
+    <p><b>User:</b> Ramurthy-Nagar (K322)</p>
+    <p><b>Status:</b> <span id="adminStatus"></span></p>
     <div class="mt-6 flex gap-4">
       <button onclick="setStatus(true)" class="btn btn-main">Activate User</button>
       <button onclick="setStatus(false)" class="btn btn-alt">Deactivate User</button>
     </div>
   </div>
 
-  <!-- Firebase & XLSX -->
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js"></script>
+  <!-- XLSX Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
   <script>
-    // Firebase Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyBmQpc5TQv7SBVgluJCz8IqGVjPzMRMnOk",
-      authDomain: "ramurthy-nagar-e4523.firebaseapp.com",
-      databaseURL: "https://ramurthy-nagar-e4523-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "ramurthy-nagar-e4523",
-      storageBucket: "ramurthy-nagar-e4523.firebasestorage.app",
-      messagingSenderId: "998716952777",
-      appId: "1:998716952777:web:25977a027a99216223fd18",
-      measurementId: "G-JPLW6C3ZQ5"
-    };
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    // --- Screen Management ---
+    if(!localStorage.getItem("userStatus")) localStorage.setItem("userStatus","active");
+    let currentData=[],copiedLinks=new Set(JSON.parse(localStorage.getItem("copiedLinks")||"[]"));
+    const storeID="91KDIPL614-01";
 
-    const adminUser = "Matrix";
-    const adminPass = "NaveenRusthin@25";
-    let currentData = [];
-
-    // --- Screen management ---
     function showScreen(id){
-      ['loginScreen','appScreen','adminScreen'].forEach(s=>document.getElementById(s).style.display='none');
-      document.getElementById(id).style.display='block';
+      ['loginScreen','appScreen','adminScreen'].forEach(s=>{
+        const el=document.getElementById(s);
+        el.classList.remove('show'); el.style.display='none';
+      });
+      const el=document.getElementById(id);
+      el.style.display='block';
+      setTimeout(()=>el.classList.add('show'),10);
     }
 
-    // --- Login ---
     function login(){
-      const userId = document.getElementById("userId").value.trim();
-      const password = document.getElementById("password").value.trim();
-
-      if(userId === adminUser && password === adminPass){
-        showScreen("adminScreen");
-        updateAdminStatus();
-        return;
+      const userId=document.getElementById("userId").value.trim();
+      const password=document.getElementById("password").value.trim();
+      if(userId==="Matrix" && password==="NaveenRusthin@25"){
+        showScreen('adminScreen'); updateAdminStatus(); return;
       }
-
-      firebase.database().ref("users/" + userId).get().then(snapshot=>{
-        if(snapshot.exists()){
-          const user = snapshot.val();
-          if(user.password === password){
-            if(user.status === "active"){
-              showScreen("appScreen");
-              document.getElementById("userNameDisplay").innerText = userId;
-              document.getElementById("statusLabel").innerText = "✅ Active";
-              document.getElementById("fileInput").disabled = false;
-              document.getElementById("generateBtn").disabled = false;
-            } else alert("❌ Your account is inactive. Contact admin.");
-          } else document.getElementById("loginMessage").innerText = "Invalid password!";
-        } else document.getElementById("loginMessage").innerText = "User not found!";
-      });
+      if(userId && password){
+        const status=localStorage.getItem("userStatus");
+        showScreen('appScreen');
+        document.getElementById("statusLabel").innerText=status==="active"?"✅ Active":"❌ Inactive";
+        document.getElementById("fileInput").disabled = status==="inactive";
+        document.getElementById("generateBtn").disabled = status==="inactive";
+        if(status==="inactive") alert("Your subscription has ended. Contact your Admin.");
+      }else{document.getElementById("loginMessage").innerText="Invalid credentials!";}
     }
 
-    // --- Logout ---
-    function logout(){ showScreen("loginScreen"); }
-
-    // --- Admin Functions ---
-    function setStatus(active){
-      firebase.database().ref("users/ramurthy-nagar/status").set(active?"active":"inactive")
-        .then(()=>updateAdminStatus())
-        .then(()=>alert(`User status updated to ${active?"Active":"Inactive"}`));
-    }
-
-    function updateAdminStatus(){
-      firebase.database().ref("users/ramurthy-nagar/status").on("value", snap=>{
-        const s = snap.val();
-        document.getElementById("adminStatus").innerText = s==="active"?"✅ Active":"❌ Inactive";
-      });
-    }
+    function logout(){showScreen('loginScreen');}
+    function setStatus(active){localStorage.setItem("userStatus",active?"active":"inactive");updateAdminStatus();alert(`User status updated to: ${active?"Active":"Inactive"}`);}
+    function updateAdminStatus(){document.getElementById("adminStatus").innerText=localStorage.getItem("userStatus")==="active"?"✅ Active":"❌ Inactive";}
 
     // --- Excel Helpers ---
     function convertExcelDate(serial){if(!serial||isNaN(serial))return"";const date=new Date((serial-25569)*86400*1000);return`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;}
     function convertExcelTime(serial){if(!serial||isNaN(serial))return"";const totalMs=Math.round(serial*24*60*60*1000);const h=String(Math.floor(totalMs/(60*60*1000))).padStart(2,'0');const m=String(Math.floor((totalMs%(60*60*1000))/(60*1000))).padStart(2,'0');const s=String(Math.floor((totalMs%(60*1000))/1000)).padStart(2,'0');return`${h}:${m}:${s}`;}
 
-    const storeID="91KDIPL614-01";
-
+    // --- Generate Link for K322 ---
     function generateSurveyLink(row){
       const receipt=row['Receipt No.'], sales=row['Sales Type'];
       let SM='',OI='',OT='';
@@ -241,18 +231,37 @@
       currentData.forEach(row=>{
         if(row.link){
           const tr=document.createElement('tr');
-          tr.innerHTML=`<td>${row['Receipt No.']}</td><td>${row['Sales Type']}</td><td><button onclick="copyLink('${row.link}', this)" class="btn btn-main">Copy</button></td>`;
+          if(copiedLinks.has(row.link)){
+            tr.classList.add("copied");
+            tr.innerHTML=`<td>${row['Receipt No.']}</td><td>${row['Sales Type']}</td><td><button disabled class="btn btn-alt">Copied</button></td>`;
+          }else{
+            tr.innerHTML=`<td>${row['Receipt No.']}</td><td>${row['Sales Type']}</td><td><button onclick="copyLink('${row.link}', this)" class="btn btn-main">Copy</button></td>`;
+          }
           tbody.appendChild(tr);
         }
       });
-      document.getElementById('copyAllBtn').disabled = currentData.length===0;
-      document.getElementById('exportBtn').disabled = currentData.length===0;
+      document.getElementById('copyAllBtn').disabled=false;
+      document.getElementById('exportBtn').disabled=false;
     }
 
     function clearData(){currentData=[];document.querySelector("#linkTable tbody").innerHTML='';document.getElementById('copyAllBtn').disabled=true;document.getElementById('exportBtn').disabled=true;}
-    function copyLink(link,btn){navigator.clipboard.writeText(link).then(()=>{btn.textContent="Copied";btn.disabled=true;});}
-    function copyAllLinks(){if(currentData.length===0)return alert("No links to copy!");const allLinks=currentData.map(r=>r.link).filter(Boolean).join("\n");navigator.clipboard.writeText(allLinks).then(()=>alert("All links copied!"));}
-    function exportToCSV(){let csv="Receipt No.,Sales Type,Generated Link\n";currentData.forEach(r=>r.link?csv+=`${r['Receipt No.']},${r['Sales Type']},${r.link}\n`:null);const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download="survey_links.csv";a.click();}
+    function copyLink(link,btn){navigator.clipboard.writeText(link).then(()=>{copiedLinks.add(link);localStorage.setItem("copiedLinks",JSON.stringify([...copiedLinks]));btn.textContent="Copied";btn.disabled=true;btn.closest('tr').classList.add('copied');});}
+    function copyAllLinks(){
+      if(currentData.length===0)return alert("No links to copy!");
+      const allLinks=currentData.map(r=>r.link).filter(Boolean).join("\n");
+      navigator.clipboard.writeText(allLinks).then(()=>{
+        currentData.forEach(r=>r.link?copiedLinks.add(r.link):null);
+        localStorage.setItem("copiedLinks",JSON.stringify([...copiedLinks]));
+        renderTable();alert("All links copied!");
+      });
+    }
+    function exportToCSV(){
+      let csv="Receipt No.,Sales Type,Generated Link\n";
+      currentData.forEach(r=>r.link?csv+=`${r['Receipt No.']},${r['Sales Type']},${r.link}\n`:null);
+      const blob=new Blob([csv],{type:'text/csv'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');a.href=url;a.download="survey_links.csv";a.click();
+    }
   </script>
 </body>
 </html>
